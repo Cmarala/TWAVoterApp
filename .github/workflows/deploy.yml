@@ -21,13 +21,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
+      # Future React build step (currently skipped for HTML-only)
+      - name: Setup Node.js (for future React build)
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies (for future React build)
+        if: hashFiles('package.json') != ''
+        run: npm ci
+      
+      - name: Build React app (for future React build)
+        if: hashFiles('package.json') != ''
+        run: npm run build
+      
       - name: Setup Pages
         uses: actions/configure-pages@v3
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: '.'
+          # Use dist folder if React build exists, otherwise use root
+          path: ${{ hashFiles('package.json') != '' && 'dist' || '.' }}
       
       - name: Deploy to GitHub Pages
         id: deployment
