@@ -8,6 +8,13 @@
     <!-- Telegram WebApp Script - Must be loaded first -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
+    <!-- Web App Manifest for "Add to Home Screen" functionality -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2481cc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="VoterSurvey">
+    
     <style>
         * {
             margin: 0;
@@ -100,6 +107,12 @@
         
         // Expand the app to full height
         tg.expand();
+        
+        // Enable closing confirmation to make it feel more like an app
+        tg.enableClosingConfirmation();
+        
+        // Set header color for better integration
+        tg.setHeaderColor('bg_color');
         
         // Get user information
         const user = tg.initDataUnsafe?.user;
