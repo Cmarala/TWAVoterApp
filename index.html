@@ -96,6 +96,7 @@
         <div class="user-info">
             <p id="user-greeting">Loading user info...</p>
             <p id="platform-info" class="platform-info"></p>
+            <p id="connection-status" class="platform-info">🌐 Online</p>
         </div>
         
         <button class="button" onclick="showAlert()">Say Hello!</button>
@@ -129,13 +130,48 @@
         // Show platform information
         platformInfo.textContent = `Platform: ${tg.platform || 'web'} | Version: ${tg.version || '6.0'}`;
         
+        // Connection status management
+        const connectionStatus = document.getElementById('connection-status');
+        
+        function updateConnectionStatus() {
+            if (navigator.onLine) {
+                connectionStatus.textContent = '🌐 Online';
+                connectionStatus.style.color = 'var(--tg-theme-hint-color, #999999)';
+            } else {
+                connectionStatus.textContent = '📱 Offline Mode';
+                connectionStatus.style.color = 'var(--tg-theme-destructive-text-color, #ff4444)';
+            }
+        }
+        
+        // Update connection status on load and when it changes
+        updateConnectionStatus();
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        
         // Function to show alert
         function showAlert() {
+            const message = navigator.onLine ? 
+                'Hello from TWA Voter Survey App! 🗳️' : 
+                'Hello from TWA Voter Survey App! 🗳️ (Offline Mode)';
+                
             if (tg.showAlert) {
-                tg.showAlert('Hello from TWA Voter Survey App! 🗳️');
+                tg.showAlert(message);
             } else {
-                alert('Hello from TWA Voter Survey App! 🗳️');
+                alert(message);
             }
+        }
+        
+        // Register Service Worker for offline functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(function(error) {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
         }
         
         // Mark the app as ready
