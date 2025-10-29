@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TWA Voter Survey</title>
+    
+    <!-- Telegram WebApp Script - Must be loaded first -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .hello-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: var(--tg-theme-text-color, #000000);
+        }
+        
+        .hello-subtitle {
+            font-size: 18px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-bottom: 32px;
+        }
+        
+        .user-info {
+            background-color: var(--tg-theme-secondary-bg-color, #f1f1f1);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .platform-info {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-top: 20px;
+        }
+        
+        .button {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .button:hover {
+            opacity: 0.9;
+        }
+        
+        .button:active {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="hello-title">Hello! 👋</h1>
+        <p class="hello-subtitle">Welcome to TWA Voter Survey</p>
+        
+        <div class="user-info">
+            <p id="user-greeting">Loading user info...</p>
+            <p id="platform-info" class="platform-info"></p>
+        </div>
+        
+        <button class="button" onclick="showAlert()">Say Hello!</button>
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        
+        // Expand the app to full height
+        tg.expand();
+        
+        // Get user information
+        const user = tg.initDataUnsafe?.user;
+        const userGreeting = document.getElementById('user-greeting');
+        const platformInfo = document.getElementById('platform-info');
+        
+        if (user) {
+            const name = user.first_name || 'there';
+            userGreeting.textContent = `Hello, ${name}!`;
+        } else {
+            userGreeting.textContent = 'Hello, there!';
+        }
+        
+        // Show platform information
+        platformInfo.textContent = `Platform: ${tg.platform || 'web'} | Version: ${tg.version || '6.0'}`;
+        
+        // Function to show alert
+        function showAlert() {
+            if (tg.showAlert) {
+                tg.showAlert('Hello from TWA Voter Survey App! 🗳️');
+            } else {
+                alert('Hello from TWA Voter Survey App! 🗳️');
+            }
+        }
+        
+        // Mark the app as ready
+        tg.ready();
+    </script>
+</body>
+</html>
