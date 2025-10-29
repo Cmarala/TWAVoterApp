@@ -2,6 +2,8 @@
 
 A simple Telegram Web App for voter surveys.
 
+🚀 **Live App**: [https://Cmarala.github.io/TWAVoterApp/](https://Cmarala.github.io/TWAVoterApp/)
+
 ## Setup
 
 1. Go to [GitHub Settings > Pages](https://github.com/Cmarala/TWAVoterApp/settings/pages)
