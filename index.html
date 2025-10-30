@@ -5,8 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>TWA Voter Survey</title>
     
-    <!-- Telegram WebApp Script - Must be loaded first -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Telegram WebApp Script with Offline Fallback -->
+    <script>
+        // Smart Telegram SDK loader with offline fallback
+        (function() {
+            const loadTelegramSDK = () => {
+                if (navigator.onLine) {
+                    // Try to load official Telegram SDK
+                    const script = document.createElement('script');
+                    script.src = 'https://telegram.org/js/telegram-web-app.js';
+                    script.onload = () => {
+                        console.log('✅ Official Telegram SDK loaded');
+                        // Cache SDK for offline use
+                        if (window.Telegram?.WebApp) {
+                            localStorage.setItem('twa_sdk_cached', 'true');
+                        }
+                    };
+                    script.onerror = () => {
+                        console.log('❌ Failed to load official SDK, using offline fallback');
+                        loadOfflineSDK();
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    console.log('📱 Offline detected, using cached SDK');
+                    loadOfflineSDK();
+                }
+            };
+
+            const loadOfflineSDK = () => {
+                const script = document.createElement('script');
+                script.src = './telegram-offline-sdk.js';
+                script.onload = () => {
+                    console.log('✅ Offline Telegram SDK loaded');
+                };
+                document.head.appendChild(script);
+            };
+
+            // Load immediately
+            loadTelegramSDK();
+        })();
+    </script>
     
     <!-- Web App Manifest for "Add to Home Screen" functionality -->
     <link rel="manifest" href="/manifest.json">

@@ -33,7 +33,7 @@ export default defineConfig({
         
         // Runtime caching strategies
         runtimeCaching: [
-          // Cache Telegram SDK
+          // Cache Telegram SDK with fallback
           {
             urlPattern: /^https:\/\/telegram\.org\/js\/telegram-web-app\.js$/,
             handler: 'CacheFirst',
@@ -42,6 +42,19 @@ export default defineConfig({
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              }
+            }
+          },
+          
+          // Cache our offline SDK fallback
+          {
+            urlPattern: /telegram-offline-sdk\.js$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'telegram-offline-sdk-cache',
+              expiration: {
+                maxEntries: 5,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               }
             }
           },

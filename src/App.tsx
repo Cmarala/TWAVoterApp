@@ -29,10 +29,33 @@ function App() {
     // Check offline capability
     checkOfflineCapability().then(setOfflineCapable)
     
-    // Show info about Telegram Web App offline behavior
-    if (window.Telegram?.WebApp) {
-      console.log('✅ Telegram Web App initialized - Offline mode available after first load')
-    }
+    // Enhanced Telegram Web App detection and offline handling
+    const handleTelegramInit = () => {
+      if (window.Telegram?.WebApp) {
+        const isOfflineMode = !navigator.onLine || !(window.Telegram.WebApp as any)?.initData;
+        console.log(isOfflineMode ? 
+          '📱 Telegram Web App initialized in OFFLINE mode - Using cached data' : 
+          '✅ Telegram Web App initialized ONLINE - Fresh session'
+        );
+        
+        // If offline and we have cached user data, restore it
+        if (isOfflineMode) {
+          const cachedUser = localStorage.getItem('twa_user');
+          if (cachedUser) {
+            try {
+              const userData = JSON.parse(cachedUser);
+              console.log('👤 Restored cached user data for offline mode:', userData);
+            } catch (e) {
+              console.log('⚠️ Could not restore cached user data');
+            }
+          }
+        }
+      }
+    };
+
+    // Handle both immediate and delayed Telegram initialization
+    handleTelegramInit();
+    window.addEventListener('TelegramWebAppReady', handleTelegramInit);
   }, [initializeApp])
 
   const handleRefreshCache = async () => {
