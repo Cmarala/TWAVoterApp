@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TWA Field Survey - Offline</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        p {
+            margin: 10px 0;
+            font-size: 16px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        .retry-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        .retry-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .online {
+            color: #52c41a;
+            font-weight: 600;
+        }
+        .offline {
+            color: #faad14;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📱</div>
+        <h1>TWA Field Survey</h1>
+        <p>The app is temporarily unavailable. This usually happens when:</p>
+        
+        <div style="text-align: left; margin: 20px 0;">
+            <p>• First time loading without internet</p>
+            <p>• App cache needs to be initialized</p>
+            <p>• Service Worker not yet registered</p>
+        </div>
+        
+        <button class="retry-btn" onclick="retryLoad()">
+            🔄 Retry Loading
+        </button>
+        
+        <div class="status">
+            <strong>Connection Status:</strong> 
+            <span id="status" class="offline">Checking...</span>
+        </div>
+    </div>
+
+    <script>
+        // Update connection status
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
+            if (navigator.onLine) {
+                statusEl.textContent = 'Online';
+                statusEl.className = 'online';
+            } else {
+                statusEl.textContent = 'Offline';
+                statusEl.className = 'offline';
+            }
+        }
+
+        // Retry loading the main app
+        function retryLoad() {
+            const baseUrl = window.location.href.includes('/TWAVoterApp/') 
+                ? '/TWAVoterApp/' 
+                : '/';
+            window.location.href = baseUrl;
+        }
+
+        // Monitor connection changes
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+        
+        // Initial status check
+        updateStatus();
+
+        // Auto-retry when coming back online
+        window.addEventListener('online', () => {
+            setTimeout(() => {
+                if (navigator.onLine) {
+                    retryLoad();
+                }
+            }, 2000);
+        });
+
+        // Check for Service Worker registration and try to activate
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                if (registration) {
+                    console.log('Service Worker found, attempting activation...');
+                    registration.update().then(() => {
+                        setTimeout(retryLoad, 3000);
+                    });
+                } else {
+                    console.log('No Service Worker registered yet');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

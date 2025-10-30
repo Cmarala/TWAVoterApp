@@ -317,23 +317,59 @@ export const surveySessionOperations = {
 // ===== DATABASE INITIALIZATION =====
 export const initializeOfflineDB = async (): Promise<void> => {
   try {
+    // Ensure database opens successfully
     await db.open()
-    console.log('Field Survey Database initialized successfully')
+    console.log('🗄️ Field Survey Database initialized successfully')
+    
+    // Verify database is accessible
+    const isReady = db.isOpen()
+    if (!isReady) {
+      throw new Error('Database failed to open properly')
+    }
     
     // Check existing data
     const voterCount = await db.voters.count()
     const surveyCount = await db.surveyTemplates.count()
     const responseCount = await db.surveyResponses.count()
     
-    console.log(`Database status: ${voterCount} voters, ${surveyCount} surveys, ${responseCount} responses`)
+    console.log(`📊 Database status: ${voterCount} voters, ${surveyCount} surveys, ${responseCount} responses`)
     
-    // Add sample data if empty
+    // Add sample data if empty (for development/demo)
     if (voterCount === 0) {
+      console.log('🚀 Adding sample data for demonstration...')
       await addSampleData()
     }
     
+    // Verify offline functionality
+    console.log(`📱 Offline Mode: ${!navigator.onLine ? 'ACTIVE' : 'Ready'}`)
+    console.log(`💾 Database Type: IndexedDB (${db.name})`)
+    
+    // Set up periodic data validation (every 30 seconds)
+    setInterval(async () => {
+      try {
+        const currentCount = await db.voters.count()
+        if (currentCount === 0) {
+          console.warn('⚠️ No voters found - database may need reinitialization')
+        }
+      } catch (err) {
+        console.error('❌ Database health check failed:', err)
+      }
+    }, 30000)
+    
   } catch (error) {
-    console.error('Failed to initialize Field Survey database:', error)
+    console.error('❌ Failed to initialize Field Survey database:', error)
+    
+    // Attempt recovery
+    try {
+      console.log('🔄 Attempting database recovery...')
+      await db.delete()
+      db = new FieldSurveyDB(currentConstituency)
+      await db.open()
+      await addSampleData()
+      console.log('✅ Database recovered successfully')
+    } catch (recoveryError) {
+      console.error('💥 Database recovery failed:', recoveryError)
+    }
   }
 }
 

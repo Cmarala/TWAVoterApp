@@ -1,27 +1,43 @@
 import React, { useState } from 'react'
-import { Card, Typography, Space, Tag, Avatar, Row, Col } from 'antd'
-import { UserOutlined, WifiOutlined, DisconnectOutlined, TeamOutlined } from '@ant-design/icons'
+import { Card, Typography, Space, Tag, Avatar, Row, Col, Button } from 'antd'
+import { UserOutlined, WifiOutlined, DisconnectOutlined, TeamOutlined, ReloadOutlined } from '@ant-design/icons'
 import { useAppStore } from './stores/appStore'
 import { showTelegramAlert } from './utils/telegram'
 import { VoterInfo } from './utils/database'
+import { useOnlineStatus, checkOfflineCapability, updateCache } from './utils/offline'
 import VoterList from './components/VoterList'
 import VoterDetails from './components/VoterDetails'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 function App() {
   const { 
-    isOnline, 
     user,
     voters, 
     initializeApp
   } = useAppStore()
 
   const [selectedVoter, setSelectedVoter] = useState<VoterInfo | null>(null)
+  const [offlineCapable, setOfflineCapable] = useState(false)
+  
+  // Use custom online status hook
+  const isOnline = useOnlineStatus()
 
   React.useEffect(() => {
     initializeApp()
+    
+    // Check offline capability
+    checkOfflineCapability().then(setOfflineCapable)
   }, [initializeApp])
+
+  const handleRefreshCache = async () => {
+    try {
+      await updateCache()
+      showTelegramAlert('Cache updated successfully! App is ready for offline use.')
+    } catch (error) {
+      showTelegramAlert('Failed to update cache. Please try again.')
+    }
+  }
 
   const handleVoterSelect = (voter: VoterInfo) => {
     setSelectedVoter(voter)
@@ -35,9 +51,26 @@ function App() {
   }
 
   const connectionStatus = isOnline ? (
-    <Tag icon={<WifiOutlined />} color="success">Online</Tag>
+    <Space>
+      <Tag icon={<WifiOutlined />} color="success">Online</Tag>
+      {offlineCapable && <Tag color="blue">Offline Ready</Tag>}
+    </Space>
   ) : (
-    <Tag icon={<DisconnectOutlined />} color="error">Offline - Field Mode</Tag>
+    <Space>
+      <Tag icon={<DisconnectOutlined />} color={offlineCapable ? "processing" : "error"}>
+        {offlineCapable ? "Offline Mode" : "No Offline Support"}
+      </Tag>
+      {!offlineCapable && (
+        <Button 
+          size="small" 
+          type="link" 
+          icon={<ReloadOutlined />}
+          onClick={handleRefreshCache}
+        >
+          Enable Offline
+        </Button>
+      )}
+    </Space>
   )
 
   return (
@@ -110,12 +143,25 @@ function App() {
 
         {/* Offline Status */}
         {!isOnline && (
-          <Card style={{ borderColor: '#faad14' }}>
+          <Card style={{ borderColor: offlineCapable ? '#52c41a' : '#faad14' }}>
             <Space>
-              <DisconnectOutlined style={{ color: '#faad14' }} />
+              <DisconnectOutlined style={{ color: offlineCapable ? '#52c41a' : '#faad14' }} />
               <div>
-                <strong>Field Mode Active</strong> - Working offline. 
-                Survey data will sync automatically when connection is restored.
+                {offlineCapable ? (
+                  <div>
+                    <strong>Offline Field Mode Active</strong> - All features available offline.<br />
+                    <Text type="secondary">
+                      {voters.length} voters cached • Survey data will sync when online
+                    </Text>
+                  </div>
+                ) : (
+                  <div>
+                    <strong>Limited Offline Mode</strong> - Some features may not work.<br />
+                    <Text type="secondary">
+                      Click "Enable Offline" to cache all resources for full offline support
+                    </Text>
+                  </div>
+                )}
               </div>
             </Space>
           </Card>
