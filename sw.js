@@ -1,9 +1,9 @@
-// Service Worker for offline functionality
-const CACHE_NAME = 'twa-voter-survey-v1';
+// Service Worker for offline functionality - React Ready
+const CACHE_NAME = 'twa-voter-survey-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  '/TWAVoterApp/',
+  '/TWAVoterApp/index.html',
+  '/TWAVoterApp/manifest.json',
   'https://telegram.org/js/telegram-web-app.js'
 ];
 

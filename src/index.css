@@ -1,0 +1,77 @@
+/* Global styles for TWA Voter Survey App */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--tg-theme-text-color, #000000);
+  background-color: var(--tg-theme-bg-color, #ffffff);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Telegram WebApp specific styles */
+.twa-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0;
+  background: var(--tg-theme-bg-color, #ffffff);
+}
+
+/* Ant Design theme overrides for Telegram */
+.ant-card {
+  border-color: var(--tg-theme-hint-color, #cccccc);
+}
+
+.ant-btn-primary {
+  background-color: var(--tg-theme-button-color, #2481cc);
+  border-color: var(--tg-theme-button-color, #2481cc);
+  color: var(--tg-theme-button-text-color, #ffffff);
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: var(--tg-theme-button-color, #2481cc);
+  border-color: var(--tg-theme-button-color, #2481cc);
+  opacity: 0.9;
+}
+
+/* Connection status styles */
+.connection-online {
+  color: #52c41a;
+}
+
+.connection-offline {
+  color: #ff4d4f;
+}
+
+/* Loading states */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+  
+  .ant-card {
+    margin: 8px;
+    border-radius: 12px;
+  }
+}
