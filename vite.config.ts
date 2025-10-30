@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,txt,woff2}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/telegram\.org\/js\/telegram-web-app\.js$/,
@@ -19,10 +19,7 @@ export default defineConfig({
               cacheName: 'telegram-sdk-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
-              },
-              cacheKeyWillBeUsed: async ({ request }) => {
-                return `${request.url}?version=7.0`;
+                maxAgeSeconds: 60 * 60 * 24 * 365
               }
             }
           }
@@ -56,7 +53,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': '/src',
     },
   },
   base: '/TWAVoterApp/',

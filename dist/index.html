@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TWA Voter Survey</title>
+    
+    <!-- Telegram WebApp Script - Must be loaded first -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Web App Manifest for "Add to Home Screen" functionality -->
+    <link rel="manifest" href="/TWAVoterApp/assets/manifest-B48ZGFDP.json">
+    <meta name="theme-color" content="#2481cc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="VoterSurvey">
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://telegram.org">
+    
+    <style>
+        /* Critical CSS for initial load */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        
+        #root {
+            min-height: 100vh;
+        }
+        
+        .loading-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--tg-theme-hint-color, #cccccc);
+            border-top: 3px solid var(--tg-theme-button-color, #2481cc);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+  <script type="module" crossorigin src="/TWAVoterApp/assets/index-DGs_ku0v.js"></script>
+  <link rel="stylesheet" crossorigin href="/TWAVoterApp/assets/index-5CK7jfrF.css">
+<link rel="manifest" href="/TWAVoterApp/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/TWAVoterApp/registerSW.js"></script></head>
+<body>
+    <div id="root">
+        <!-- Loading screen while React app loads -->
+        <div class="loading-screen">
+            <div class="loading-spinner"></div>
+            <div>Loading TWA Voter Survey...</div>
+            <div style="font-size: 12px; opacity: 0.7;">React 18+ • Ant Design • Zustand • Dexie.js</div>
+        </div>
+    </div>
+    
+</body>
+</html>

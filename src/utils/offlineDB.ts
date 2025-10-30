@@ -28,7 +28,7 @@ export interface Response {
   userName: string
   answers: Record<string, any>
   submittedAt: Date
-  synced: boolean
+  synced: number // 0 = false, 1 = true (IndexedDB compatible)
 }
 
 // Dexie database class
@@ -136,17 +136,20 @@ export const surveyOperations = {
 
 export const responseOperations = {
   // Add new response
-  add: (response: Omit<Response, 'id'>) => db.responses.add(response),
+  add: (response: Omit<Response, 'id'>) => db.responses.add({
+    ...response,
+    synced: response.synced || 0
+  }),
   
   // Get responses for a survey
   getBySurvey: (surveyId: number) => 
     db.responses.where('surveyId').equals(surveyId).toArray(),
   
   // Get unsynced responses
-  getUnsynced: () => db.responses.where('synced').equals(false).toArray(),
+  getUnsynced: () => db.responses.where('synced').equals(0).toArray(),
   
   // Mark response as synced
-  markSynced: (id: number) => db.responses.update(id, { synced: true }),
+  markSynced: (id: number) => db.responses.update(id, { synced: 1 }),
   
   // Get all responses
   getAll: () => db.responses.orderBy('submittedAt').reverse().toArray()
@@ -172,8 +175,10 @@ export const syncOperations = {
         // await api.responses.create(response)
         
         // For now, just mark as synced (demo purposes)
-        await responseOperations.markSynced(response.id!)
-        console.log(`Synced response ${response.id}`)
+        if (response.id) {
+          await responseOperations.markSynced(response.id)
+          console.log(`Synced response ${response.id}`)
+        }
       } catch (error) {
         console.error(`Failed to sync response ${response.id}:`, error)
       }

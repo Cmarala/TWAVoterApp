@@ -1,10 +1,28 @@
 // Telegram WebApp utilities following TechStack.md requirements
-import type { WebApp } from '@telegram-apps/sdk'
 
+// Type definitions for Telegram WebApp
 declare global {
   interface Window {
     Telegram: {
-      WebApp: WebApp
+      WebApp: {
+        ready: () => void
+        expand: () => void
+        enableClosingConfirmation: () => void
+        setHeaderColor: (color: string) => void
+        showAlert: (message: string) => void
+        platform: string
+        version: string
+        colorScheme: 'light' | 'dark'
+        initDataUnsafe?: {
+          user?: {
+            id: number
+            first_name: string
+            last_name?: string
+            username?: string
+            photo_url?: string
+          }
+        }
+      }
     }
   }
 }

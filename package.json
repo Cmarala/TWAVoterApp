@@ -15,9 +15,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "antd": "^5.12.8",
+    "@ant-design/icons": "^5.2.6",
     "zustand": "^4.4.7",
     "dexie": "^3.2.4",
-    "@telegram-apps/sdk": "^1.1.3",
     "axios": "^1.6.2"
   },
   "devDependencies": {
