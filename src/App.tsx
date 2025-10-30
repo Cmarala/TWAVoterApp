@@ -28,6 +28,11 @@ function App() {
     
     // Check offline capability
     checkOfflineCapability().then(setOfflineCapable)
+    
+    // Show info about Telegram Web App offline behavior
+    if (window.Telegram?.WebApp) {
+      console.log('✅ Telegram Web App initialized - Offline mode available after first load')
+    }
   }, [initializeApp])
 
   const handleRefreshCache = async () => {
@@ -53,13 +58,15 @@ function App() {
   const connectionStatus = isOnline ? (
     <Space>
       <Tag icon={<WifiOutlined />} color="success">Online</Tag>
-      {offlineCapable && <Tag color="blue">Offline Ready</Tag>}
+      {offlineCapable && <Tag color="blue">Offline Ready ✨</Tag>}
+      {window.Telegram?.WebApp && <Tag color="purple" style={{ fontSize: '10px' }}>TWA Mode</Tag>}
     </Space>
   ) : (
     <Space>
       <Tag icon={<DisconnectOutlined />} color={offlineCapable ? "processing" : "error"}>
-        {offlineCapable ? "Offline Mode" : "No Offline Support"}
+        {offlineCapable ? "Offline Mode 📱" : "No Offline Support"}
       </Tag>
+      {window.Telegram?.WebApp && <Tag color="purple" style={{ fontSize: '10px' }}>TWA Mode</Tag>}
       {!offlineCapable && (
         <Button 
           size="small" 
