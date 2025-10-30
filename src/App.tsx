@@ -197,23 +197,91 @@ function App() {
     )
   }
 
-  // App Banner Component
-  const AppBanner = () => (
-    <Card style={{ marginBottom: 16, textAlign: 'center' }}>
-      <Space direction="vertical" size="small" style={{ width: '100%' }}>
-        <TeamOutlined style={{ fontSize: 48, color: '#1890ff' }} />
-        <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-          Field Survey App
-        </Title>
-        <Text type="secondary">
-          House-to-house voter data collection
-        </Text>
-        <Text type="secondary" style={{ fontSize: '12px' }}>
-          {voterStats.total} voters • {voterStats.surveyed} surveyed • {voterStats.pending} pending
-        </Text>
-      </Space>
-    </Card>
-  )
+  // App Banner Component with Image Support
+  const AppBanner = () => {
+    // Try PNG first, fallback to SVG demo, then to text
+    const bannerImageUrl = '/banner.png' // Place your banner.png in the public folder
+    const demoBannerUrl = '/banner.svg'   // Demo SVG banner included
+    
+    return (
+      <Card 
+        style={{ 
+          marginBottom: 16, 
+          padding: 0,
+          overflow: 'hidden'
+        }}
+        bodyStyle={{ padding: 0 }}
+      >
+        {/* Full Width Banner Image */}
+        <div style={{ 
+          width: '100%',
+          position: 'relative',
+          textAlign: 'center'
+        }}>
+          <img 
+            src={bannerImageUrl}
+            alt="Field Survey App Banner"
+            style={{
+              width: '100%',
+              height: 'auto',
+              maxHeight: '200px',
+              objectFit: 'cover',
+              display: 'block'
+            }}
+            onError={(e) => {
+              // Try demo SVG banner first
+              const target = e.currentTarget
+              if (target.src.includes('.png')) {
+                target.src = demoBannerUrl
+                return
+              }
+              // If both images fail, show text fallback
+              target.style.display = 'none'
+              const fallbackDiv = target.nextElementSibling as HTMLElement
+              if (fallbackDiv) {
+                fallbackDiv.style.display = 'block'
+              }
+            }}
+          />
+          
+          {/* Fallback Text Banner (hidden by default) */}
+          <div 
+            style={{ 
+              display: 'none',
+              padding: '24px 16px',
+              textAlign: 'center'
+            }}
+          >
+            <Space direction="vertical" size="small" style={{ width: '100%' }}>
+              <TeamOutlined style={{ fontSize: 48, color: '#1890ff' }} />
+              <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+                Field Survey App
+              </Title>
+              <Text type="secondary">
+                House-to-house voter data collection
+              </Text>
+            </Space>
+          </div>
+          
+          {/* Stats Overlay on Image */}
+          <div style={{
+            position: 'absolute',
+            bottom: '8px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            padding: '4px 12px',
+            borderRadius: '12px',
+            fontSize: '12px',
+            backdropFilter: 'blur(4px)'
+          }}>
+            {voterStats.total} voters • {voterStats.surveyed} surveyed • {voterStats.pending} pending
+          </div>
+        </div>
+      </Card>
+    )
+  }
 
   // Feature Grid Component
   const FeatureGrid = () => {
