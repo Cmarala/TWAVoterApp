@@ -2,7 +2,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { getTelegramUser } from '../utils/telegram'
-import { surveyOperations, responseOperations, type Survey, type Response } from '../utils/offlineDB'
+import { voterOperations, type VoterInfo } from '../utils/offlineDB'
 
 interface TelegramUser {
   id: number
@@ -18,10 +18,10 @@ interface AppState {
   
   // User state
   user: TelegramUser | null
+  currentVoter: VoterInfo | null
   
-  // Survey data
-  surveys: Survey[]
-  responses: Response[]
+  // Voter data
+  voters: VoterInfo[]
   
   // UI state
   loading: boolean
@@ -30,11 +30,11 @@ interface AppState {
   // Actions
   setOnlineStatus: (status: boolean) => void
   initializeApp: () => Promise<void>
-  loadSurveys: () => Promise<void>
-  loadResponses: () => Promise<void>
+  loadVoters: () => Promise<void>
   showGreeting: () => void
-  addSurvey: (survey: Omit<Survey, 'id'>) => Promise<void>
-  addResponse: (response: Omit<Response, 'id'>) => Promise<void>
+  addVoter: (voter: Partial<VoterInfo>) => Promise<void>
+  updateVoter: (id: number, changes: Partial<VoterInfo>) => Promise<void>
+  getCurrentVoterByTelegram: () => Promise<void>
 }
 
 export const useAppStore = create<AppState>()(
@@ -43,8 +43,8 @@ export const useAppStore = create<AppState>()(
       // Initial state
       isOnline: navigator.onLine,
       user: null,
-      surveys: [],
-      responses: [],
+      currentVoter: null,
+      voters: [],
       loading: false,
       greetingCount: 0,
 
@@ -69,8 +69,8 @@ export const useAppStore = create<AppState>()(
           }
           
           // Load offline data
-          await get().loadSurveys()
-          await get().loadResponses()
+          await get().loadVoters()
+          await get().getCurrentVoterByTelegram()
           
           // Set up online/offline listeners
           const handleOnline = () => get().setOnlineStatus(true)
@@ -88,23 +88,26 @@ export const useAppStore = create<AppState>()(
         }
       },
 
-      loadSurveys: async () => {
+      loadVoters: async () => {
         try {
-          const surveys = await surveyOperations.getAll()
-          set({ surveys })
-          console.log(`Loaded ${surveys.length} surveys from offline DB`)
+          const voters = await voterOperations.getAll()
+          set({ voters })
+          console.log(`Loaded ${voters.length} voters from offline DB`)
         } catch (error) {
-          console.error('Failed to load surveys:', error)
+          console.error('Failed to load voters:', error)
         }
       },
 
-      loadResponses: async () => {
+      getCurrentVoterByTelegram: async () => {
         try {
-          const responses = await responseOperations.getAll()
-          set({ responses })
-          console.log(`Loaded ${responses.length} responses from offline DB`)
+          const { user } = get()
+          if (user?.id) {
+            const currentVoter = await voterOperations.getByTelegramId(user.id)
+            set({ currentVoter })
+            console.log('Current voter loaded:', currentVoter)
+          }
         } catch (error) {
-          console.error('Failed to load responses:', error)
+          console.error('Failed to get current voter:', error)
         }
       },
 
@@ -114,23 +117,29 @@ export const useAppStore = create<AppState>()(
         }))
       },
 
-      addSurvey: async (survey: Omit<Survey, 'id'>) => {
+      addVoter: async (voter: Partial<VoterInfo>) => {
         try {
-          await surveyOperations.add(survey)
-          await get().loadSurveys()
-          console.log('Survey added successfully')
+          await voterOperations.add(voter)
+          await get().loadVoters()
+          console.log('Voter added successfully')
         } catch (error) {
-          console.error('Failed to add survey:', error)
+          console.error('Failed to add voter:', error)
         }
       },
 
-      addResponse: async (response: Omit<Response, 'id'>) => {
+      updateVoter: async (id: number, changes: Partial<VoterInfo>) => {
         try {
-          await responseOperations.add(response)
-          await get().loadResponses()
-          console.log('Response added successfully')
+          await voterOperations.update(id, changes)
+          await get().loadVoters()
+          
+          // Update current voter if it's the same one
+          const { currentVoter } = get()
+          if (currentVoter?.id === id) {
+            await get().getCurrentVoterByTelegram()
+          }
+          console.log('Voter updated successfully')
         } catch (error) {
-          console.error('Failed to add response:', error)
+          console.error('Failed to update voter:', error)
         }
       }
     }),

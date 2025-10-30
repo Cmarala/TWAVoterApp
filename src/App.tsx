@@ -9,8 +9,9 @@ const { Title, Paragraph } = Typography
 function App() {
   const { 
     isOnline, 
-    user, 
-    surveys, 
+    user,
+    currentVoter,
+    voters, 
     initializeApp,
     showGreeting 
   } = useAppStore()
@@ -21,9 +22,8 @@ function App() {
 
   const handleGreeting = () => {
     const telegramUser = getTelegramUser()
-    const message = telegramUser 
-      ? `Hello, ${telegramUser.first_name}! Welcome to TWA Voter Survey 🗳️`
-      : 'Hello! Welcome to TWA Voter Survey 🗳️'
+    const voterName = currentVoter?.firstName || telegramUser?.first_name || 'Voter'
+    const message = `Hello, ${voterName}! Welcome to TWA Voter Registration 🗳️`
     
     showTelegramAlert(message)
     showGreeting()
@@ -47,10 +47,10 @@ function App() {
         <Card>
           <Space direction="vertical" style={{ width: '100%' }}>
             <Title level={2} style={{ margin: 0, textAlign: 'center' }}>
-              TWA Voter Survey 🗳️
+              TWA Voter Registry 🗳️
             </Title>
             <Paragraph style={{ textAlign: 'center', margin: 0 }}>
-              Production-grade Telegram Web App for voter surveys
+              Production-grade Telegram Web App for voter registration and management
             </Paragraph>
           </Space>
         </Card>
@@ -92,14 +92,41 @@ function App() {
           </Space>
         </Card>
 
-        {/* Survey Info */}
-        {surveys.length > 0 && (
-          <Card title={`Available Surveys (${surveys.length})`}>
+        {/* Voter Info */}
+        <Card title="Voter Information">
+          {currentVoter ? (
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <div>
+                <strong>Name:</strong> {currentVoter.fullName}
+              </div>
+              <div>
+                <strong>Voter ID:</strong> {currentVoter.voterId}
+              </div>
+              <div>
+                <strong>Constituency:</strong> {currentVoter.address.constituency}
+              </div>
+              <div>
+                <strong>Status:</strong> 
+                <Tag color={currentVoter.registrationStatus === 'verified' ? 'green' : 'orange'} style={{ marginLeft: 8 }}>
+                  {currentVoter.registrationStatus.toUpperCase()}
+                </Tag>
+              </div>
+            </Space>
+          ) : (
             <Paragraph>
-              📊 Surveys loaded from offline database (IndexedDB + Dexie.js)
+              🗳️ No voter registration found. Complete your registration to access voting features.
+            </Paragraph>
+          )}
+        </Card>
+
+        {/* Database Status */}
+        {voters.length > 0 && (
+          <Card title={`Voters Database (${voters.length} registered)`}>
+            <Paragraph>
+              📊 Voter data loaded from offline database (IndexedDB + Dexie.js)
             </Paragraph>
             <Paragraph style={{ fontSize: '12px', opacity: 0.7 }}>
-              Following TechStack.md architecture for production-grade offline support
+              Following TechStack.md architecture for constituency-based voter management
             </Paragraph>
           </Card>
         )}
