@@ -197,47 +197,43 @@ function App() {
     )
   }
 
-  // App Banner Component with Image Support
+  // Full Width Banner Component - Uses banner.svg directly
   const AppBanner = () => {
-    // Try PNG first, fallback to SVG demo, then to text
-    const bannerImageUrl = '/banner.png' // Place your banner.png in the public folder
-    const demoBannerUrl = '/banner.svg'   // Demo SVG banner included
-    
     return (
-      <Card 
-        style={{ 
-          marginBottom: 16, 
-          padding: 0,
-          overflow: 'hidden'
-        }}
-        bodyStyle={{ padding: 0 }}
-      >
-        {/* Full Width Banner Image */}
+      <div style={{ 
+        marginBottom: 16,
+        width: '100%',
+        overflow: 'hidden'
+      }}>
+        {/* Full Width Banner Image - No Card wrapper for true full width */}
         <div style={{ 
           width: '100%',
           position: 'relative',
-          textAlign: 'center'
+          backgroundColor: '#f0f0f0',
+          borderRadius: '8px',
+          overflow: 'hidden',
+          minHeight: '160px',
+          border: '2px dashed #ccc'
         }}>
           <img 
-            src={bannerImageUrl}
+            src="/TWAVoterApp/banner.svg"
             alt="Field Survey App Banner"
             style={{
               width: '100%',
               height: 'auto',
               maxHeight: '200px',
               objectFit: 'cover',
-              display: 'block'
+              display: 'block',
+              border: '2px solid #e0e0e0'
+            }}
+            onLoad={() => {
+              console.log('✅ Banner image loaded successfully')
             }}
             onError={(e) => {
-              // Try demo SVG banner first
-              const target = e.currentTarget
-              if (target.src.includes('.png')) {
-                target.src = demoBannerUrl
-                return
-              }
-              // If both images fail, show text fallback
-              target.style.display = 'none'
-              const fallbackDiv = target.nextElementSibling as HTMLElement
+              // If SVG fails, show text fallback
+              console.log('❌ Banner image failed to load, showing fallback')
+              e.currentTarget.style.display = 'none'
+              const fallbackDiv = e.currentTarget.nextElementSibling as HTMLElement
               if (fallbackDiv) {
                 fallbackDiv.style.display = 'block'
               }
@@ -249,15 +245,18 @@ function App() {
             style={{ 
               display: 'none',
               padding: '24px 16px',
-              textAlign: 'center'
+              textAlign: 'center',
+              backgroundColor: '#1890ff',
+              color: 'white',
+              borderRadius: '8px'
             }}
           >
             <Space direction="vertical" size="small" style={{ width: '100%' }}>
-              <TeamOutlined style={{ fontSize: 48, color: '#1890ff' }} />
-              <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+              <TeamOutlined style={{ fontSize: 48, color: 'white' }} />
+              <Title level={3} style={{ margin: 0, color: 'white' }}>
                 Field Survey App
               </Title>
-              <Text type="secondary">
+              <Text style={{ color: 'rgba(255,255,255,0.8)' }}>
                 House-to-house voter data collection
               </Text>
             </Space>
@@ -279,7 +278,7 @@ function App() {
             {voterStats.total} voters • {voterStats.surveyed} surveyed • {voterStats.pending} pending
           </div>
         </div>
-      </Card>
+      </div>
     )
   }
 
