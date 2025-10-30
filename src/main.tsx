@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import { ConfigProvider, theme } from 'antd'
 import { initializeTelegram } from './utils/telegram.ts'
-import { initializeOfflineDB } from './utils/offlineDB.ts'
+import { initializeOfflineDB } from './utils/database.ts'
 import './index.css'
 
 // Initialize Telegram WebApp

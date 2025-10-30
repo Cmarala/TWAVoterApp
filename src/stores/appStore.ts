@@ -2,7 +2,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { getTelegramUser } from '../utils/telegram'
-import { voterOperations, type VoterInfo } from '../utils/offlineDB'
+import { voterOperations, type VoterInfo } from '../utils/database'
 
 interface TelegramUser {
   id: number
